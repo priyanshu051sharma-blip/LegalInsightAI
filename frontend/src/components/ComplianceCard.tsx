@@ -21,24 +21,21 @@ export default function ComplianceCard({ analysis }: ComplianceCardProps) {
       {/* Compliance Status Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Object.entries(compliance).map(([regulation, status]: [string, any]) => (
-          <div
-            key={regulation}
-            className={`rounded-lg p-4 text-center ${getStatusColor(status)}`}
-          >
-            <p className="font-bold text-lg">{regulation}</p>
-            <p className="text-sm">{status}</p>
+          <div key={regulation} className={`rounded-md p-4 text-center ${getStatusColor(status)} border border-gray-100`}> 
+            <p className="font-semibold text-sm text-gray-800">{regulation}</p>
+            <p className="text-xs mt-1">{status}</p>
           </div>
         ))}
       </div>
 
       {/* Violations */}
       {violations.length > 0 && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded">
-          <h3 className="font-bold text-red-900 mb-3 text-lg">Compliance Violations</h3>
+        <div className="bg-red-50 border border-red-100 p-6 rounded-md">
+          <h3 className="font-bold text-red-900 mb-3 text-md">Compliance Violations</h3>
           <ul className="space-y-2">
             {violations.map((violation: any, idx: number) => (
               <li key={idx} className="text-red-800 text-sm">
-                <span className="font-semibold">•</span> {typeof violation === 'string' ? violation : violation.description}
+                <span className="font-semibold mr-2">•</span> {typeof violation === 'string' ? violation : violation.description}
               </li>
             ))}
           </ul>
@@ -47,12 +44,12 @@ export default function ComplianceCard({ analysis }: ComplianceCardProps) {
 
       {/* Recommendations */}
       {recommendations.length > 0 && (
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded">
-          <h3 className="font-bold text-blue-900 mb-3 text-lg">Recommendations</h3>
+        <div className="bg-blue-50 border border-blue-100 p-6 rounded-md">
+          <h3 className="font-bold text-blue-900 mb-3 text-md">Recommendations</h3>
           <ul className="space-y-2">
             {recommendations.map((rec: string, idx: number) => (
               <li key={idx} className="text-blue-800 text-sm">
-                <span className="font-semibold">✓</span> {rec}
+                <span className="font-semibold mr-2">✓</span> {rec}
               </li>
             ))}
           </ul>

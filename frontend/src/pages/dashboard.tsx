@@ -160,17 +160,15 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
           {/* Welcome banner */}
-          <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8 mb-8 relative overflow-hidden">
-            <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
-            <div className="absolute right-20 bottom-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2"></div>
+          <div className="card p-6 mb-8 relative overflow-hidden">
             <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
               <div>
-                <p className="text-blue-200 text-sm font-medium mb-1">Welcome back 👋</p>
-                <h1 className="text-3xl font-black">{user?.full_name || user?.username || 'User'}</h1>
-                <p className="text-blue-100 mt-1 text-sm">{docs.length === 0 ? 'Upload your first document to get started' : `${stats.analyzed} of ${stats.total} documents analyzed`}</p>
+                <p className="text-sm font-medium text-gray-500 mb-1">Welcome back 👋</p>
+                <h1 className="text-2xl font-bold text-gray-900">{user?.full_name || user?.username || 'User'}</h1>
+                <p className="text-sm text-gray-600 mt-1">{docs.length === 0 ? 'Upload your first document to get started' : `${stats.analyzed} of ${stats.total} documents analyzed`}</p>
               </div>
-              <button onClick={() => router.push('/documents')} className="flex items-center gap-2 px-6 py-3 bg-white text-blue-700 rounded-xl font-bold hover:bg-blue-50 transition shadow-lg whitespace-nowrap">
-                <span>+ Upload Document</span>
+              <button onClick={() => router.push('/documents')} className="btn-primary">
+                + Upload Document
               </button>
             </div>
           </div>
@@ -247,8 +245,8 @@ export default function Dashboard() {
                   { icon: '📊', label: 'Analytics', sub: 'Insights & trends', action: () => router.push('/documents') },
                   { icon: '👥', label: 'Team', sub: 'Manage members', action: () => router.push('/team') },
                 ].map((item, i) => (
-                  <button key={i} onClick={item.action} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition text-left group">
-                    <span className="text-2xl w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition">{item.icon}</span>
+                  <button key={i} onClick={item.action} className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-gray-50 transition text-left group">
+                    <span className="text-2xl w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center group-hover:bg-blue-100 transition">{item.icon}</span>
                     <div>
                       <p className="text-sm font-semibold text-gray-800">{item.label}</p>
                       <p className="text-xs text-gray-400">{item.sub}</p>
