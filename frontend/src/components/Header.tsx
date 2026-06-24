@@ -28,9 +28,9 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 font-black text-gray-900 text-lg hover:opacity-80 transition">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white text-sm shadow-sm">⚖️</div>
-            LegalAI
+          <Link href={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-3 font-semibold text-legal-blue text-lg hover:opacity-90 transition">
+            <div className="w-8 h-8 bg-legal-blue rounded-sm flex items-center justify-center text-white text-sm shadow">LI</div>
+            <span className="text-gray-900">LegalInsight</span>
           </Link>
 
           {/* Desktop Nav */}
