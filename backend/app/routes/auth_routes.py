@@ -69,7 +69,14 @@ async def login(
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "username": user.username,
+            "full_name": user.full_name,
+            "role": "SUPER_ADMIN" if user.is_admin else "USER",
+        }
     }
 
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useAuthStore } from '@/utils/store';
 import Link from 'next/link';
 
@@ -214,7 +214,5 @@ export default function Register() {
         </p>
       </div>
     </div>
-  );
-}
   );
 }

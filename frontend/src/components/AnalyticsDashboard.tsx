@@ -68,7 +68,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-8">
+    <div className="bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -77,44 +77,54 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         </div>
 
         {/* Key Metrics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <MetricCard
-            title="Total Documents"
-            value={metrics.totalDocuments}
-            icon="📄"
-            change="+12%"
-            color="blue"
-          />
-          <MetricCard
-            title="Completed Analysis"
-            value={metrics.completedAnalysis}
-            icon="✅"
-            change={`${((metrics.completedAnalysis / metrics.totalDocuments) * 100).toFixed(1)}%`}
-            color="green"
-          />
-          <MetricCard
-            title="High Risk Items"
-            value={metrics.highRiskCount}
-            icon="⚠️"
-            change="+5"
-            color="red"
-          />
-          <MetricCard
-            title="Compliance Rate"
-            value={`${metrics.complianceRate}%`}
-            icon="✓"
-            change="+3%"
-            color="purple"
-          />
+        <div className="mb-8">
+          <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-4 md:gap-6">
+            <div className="min-w-[220px] md:min-w-0">
+              <MetricCard
+                title="Total Documents"
+                value={metrics.totalDocuments}
+                icon="📄"
+                change="+12%"
+                color="blue"
+              />
+            </div>
+            <div className="min-w-[220px] md:min-w-0">
+              <MetricCard
+                title="Completed Analysis"
+                value={metrics.completedAnalysis}
+                icon="✅"
+                change={`${metrics.totalDocuments ? ((metrics.completedAnalysis / metrics.totalDocuments) * 100).toFixed(1) : 0}%`}
+                color="green"
+              />
+            </div>
+            <div className="min-w-[220px] md:min-w-0">
+              <MetricCard
+                title="High Risk Items"
+                value={metrics.highRiskCount}
+                icon="⚠️"
+                change="+5"
+                color="red"
+              />
+            </div>
+            <div className="min-w-[220px] md:min-w-0">
+              <MetricCard
+                title="Compliance Rate"
+                value={`${metrics.complianceRate}%`}
+                icon="✓"
+                change="+3%"
+                color="purple"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Analysis Trend */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-6" role="region" aria-label="Analysis trend chart">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Analysis Trend</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={metrics.analysisTimeTrend}>
+            <ResponsiveContainer width="100%" height={260}>
+              <LineChart data={metrics.analysisTimeTrend} aria-hidden={false}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
@@ -131,9 +141,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </div>
 
           {/* Risk Distribution */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-6" role="region" aria-label="Risk distribution chart">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Risk Distribution</h2>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={260}>
               <PieChart>
                 <Pie
                   data={metrics.riskDistribution}
@@ -141,7 +151,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                   cy="50%"
                   labelLine={false}
                   label={({ name, value }) => `${name}: ${value}`}
-                  outerRadius={100}
+                  outerRadius={90}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -156,12 +166,12 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         </div>
 
         {/* Top Issues */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Top Issues Found</h2>
             <div className="space-y-4">
               {metrics.topIssues.map((issue, index) => (
-                <div key={index} className="flex items-center justify-between">
+                <div key={index} className="flex items-center justify-between" role="listitem">
                   <div className="flex-1">
                     <div className="text-sm font-medium text-gray-900">{issue.issue}</div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
@@ -240,14 +250,19 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, change, col
   };
 
   return (
-    <div className={`${colorClasses[color]} border rounded-lg p-6`}>
+    <div
+      className={`${colorClasses[color]} border rounded-lg p-6 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+      role="group"
+      aria-label={`${title} metric`}
+      tabIndex={0}
+    >
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-600">{title}</p>
           <p className={`text-3xl font-bold ${textColorClasses[color]} mt-1`}>{value}</p>
           <p className="text-xs text-gray-500 mt-2">{change} from last period</p>
         </div>
-        <div className="text-4xl">{icon}</div>
+        <div className="text-4xl" aria-hidden>{icon}</div>
       </div>
     </div>
   );

@@ -147,6 +147,10 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: Optional[str] = None
     token_type: str = "bearer"
+    user: Optional[Dict[str, Any]] = None
+
+    class Config:
+        extra = "allow"
 
 
 class TokenPayload(BaseModel):

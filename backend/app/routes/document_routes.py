@@ -9,16 +9,18 @@ from app.services import DocumentService
 from app.utils import get_file_extension, is_allowed_file, generate_file_path
 from app.rag.document_parser import DocumentParser
 from app.utils.security import decode_token
-from fastapi.security import HTTPBearer, HTTPAuthCredentials
+from fastapi.security import HTTPBearer
+from starlette.requests import Request
 import uuid
 
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 security = HTTPBearer()
 
 
-def get_current_user_id(credentials: HTTPAuthCredentials = Depends(security)) -> str:
+async def get_current_user_id(authorization: str = Depends(security)) -> str:
     """Get current user ID from token"""
-    user_id = decode_token(credentials.credentials)
+    credentials = authorization.credentials if hasattr(authorization, 'credentials') else authorization
+    user_id = decode_token(credentials)
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

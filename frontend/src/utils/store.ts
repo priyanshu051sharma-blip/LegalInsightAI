@@ -1,10 +1,12 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface User {
   id: string;
   email: string;
   username: string;
   full_name?: string;
+  role?: string;
 }
 
 interface AuthState {
@@ -17,70 +19,62 @@ interface AuthState {
   setTokens: (accessToken: string, refreshToken: string) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  accessToken: null,
-  isAuthenticated: false,
-  
-  login: async (email: string, password: string) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      if (response.ok) {
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      accessToken: null,
+      isAuthenticated: false,
+
+      login: async (email: string, password: string) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Invalid credentials');
+        }
+
         const data = await response.json();
         set({
+          user: data.user || null,
           accessToken: data.access_token,
           isAuthenticated: true,
         });
         localStorage.setItem('accessToken', data.access_token);
-        localStorage.setItem('refreshToken', data.refresh_token);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
-    }
-  },
-  
-  register: async (userData: any) => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Registration failed');
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    }
-  },
-  
-  logout: () => {
-    set({
-      user: null,
-      accessToken: null,
-      isAuthenticated: false,
-    });
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-  },
-  
-  setTokens: (accessToken: string, refreshToken: string) => {
-    set({
-      accessToken,
-      isAuthenticated: true,
-    });
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-  },
-}));
+        if (data.refresh_token) localStorage.setItem('refreshToken', data.refresh_token);
+      },
+
+      register: async (userData: any) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData),
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw { response: { data: err } };
+        }
+      },
+
+      logout: () => {
+        set({ user: null, accessToken: null, isAuthenticated: false });
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+      },
+
+      setTokens: (accessToken: string, refreshToken: string) => {
+        set({ accessToken, isAuthenticated: true });
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+      },
+    }),
+    { name: 'auth-storage' }
+  )
+);
 
 
 interface Document {

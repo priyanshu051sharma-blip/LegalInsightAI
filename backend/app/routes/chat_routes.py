@@ -7,14 +7,14 @@ from app.services import DocumentService
 from app.rag import get_rag
 from app.agents import get_document_analyzer
 from app.utils.security import decode_token
-from fastapi.security import HTTPBearer, HTTPAuthCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Optional
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 security = HTTPBearer()
 
 
-def get_current_user_id(credentials: HTTPAuthCredentials = Depends(security)) -> str:
+def get_current_user_id(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
     """Get current user ID from token"""
     user_id = decode_token(credentials.credentials)
     if not user_id:

@@ -1,31 +1,35 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import NullPool, StaticPool
 
-# Database Configuration
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://user:password@localhost:5432/legal_assistant"
+    "sqlite:///./legal_assistant.db"
 )
 
-# Create engine
-engine = create_engine(
-    DATABASE_URL,
-    poolclass=NullPool,
-    echo=False,
-    future=True
-)
+# SQLite needs special handling for async/multi-thread use
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+        echo=False,
+    )
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        poolclass=NullPool,
+        echo=False,
+        future=True,
+    )
 
-# Session factory
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=engine,
-    future=True
 )
 
-# Base class for models
 Base = declarative_base()
 
 

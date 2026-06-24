@@ -3,7 +3,6 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZIPMiddleware
 from app.config import settings
 from app.database import init_db
 from app.utils import ensure_upload_directory
@@ -65,9 +64,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Add GZIP middleware
-app.add_middleware(GZIPMiddleware, minimum_size=1000)
 
 # Include routers
 app.include_router(health_router)

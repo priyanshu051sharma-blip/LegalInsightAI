@@ -1,12 +1,18 @@
 'use client';
-
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useAuthStore } from '@/utils/store';
-import { useRouter } from 'next/navigation';
+
+const navLinks = [
+  { href: '/dashboard', label: 'Dashboard', icon: '🏠' },
+  { href: '/documents', label: 'Documents', icon: '📄' },
+  { href: '/team', label: 'Team', icon: '👥' },
+];
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuthStore();
   const router = useRouter();
 
@@ -15,119 +21,111 @@ export default function Header() {
     router.push('/login');
   };
 
+  const isActive = (href: string) => router.pathname === href;
+
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 font-bold text-xl">
-            <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg text-white shadow-lg">
-              ⚖️
-            </div>
-            <span className="text-gray-900">Legal Assistant</span>
+          <Link href={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 font-black text-gray-900 text-lg hover:opacity-80 transition">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white text-sm shadow-sm">⚖️</div>
+            LegalAI
           </Link>
 
-          {/* Desktop Navigation */}
-          {isAuthenticated ? (
-            <>
-              <nav className="hidden md:flex items-center gap-8">
-                <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 font-medium transition relative group">
-                  Dashboard
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-                </Link>
-                <Link href="/documents" className="text-gray-700 hover:text-blue-600 font-medium transition relative group">
-                  Documents
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-                </Link>
-                <Link href="/team" className="text-gray-700 hover:text-blue-600 font-medium transition relative group">
-                  Team
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-                </Link>
-                {user?.role === 'SUPER_ADMIN' && (
-                  <Link href="/admin" className="text-gray-700 hover:text-blue-600 font-medium transition relative group">
-                    Admin
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-                  </Link>
-                )}
-              </nav>
-
-              {/* User Menu */}
-              <div className="hidden md:flex items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                    {user?.username?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                  <div className="text-sm">
-                    <p className="font-semibold text-gray-900">{user?.full_name || user?.username}</p>
-                    <p className="text-gray-500 text-xs">{user?.role}</p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 text-gray-700 hover:bg-red-50 rounded-lg font-medium transition border border-gray-200 hover:border-red-200"
+          {/* Desktop Nav */}
+          {isAuthenticated && (
+            <nav className="hidden md:flex items-center gap-1">
+              {navLinks.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition ${
+                    isActive(link.href)
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
                 >
-                  Sign Out
-                </button>
-              </div>
-            </>
-          ) : (
-            <nav className="hidden md:flex items-center gap-4">
-              <Link href="/login" className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition">
-                Sign In
-              </Link>
-              <Link href="/register" className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition shadow-lg">
-                Get Started
-              </Link>
+                  <span>{link.icon}</span>
+                  {link.label}
+                </Link>
+              ))}
+              {user?.role === 'SUPER_ADMIN' && (
+                <Link href="/admin" className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition ${isActive('/admin') ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+                  <span>⚙️</span> Admin
+                </Link>
+              )}
             </nav>
           )}
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
-            </svg>
-          </button>
+          {/* Right side */}
+          <div className="flex items-center gap-3">
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-gray-50 transition"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                    {(user?.full_name || user?.username || 'U')[0].toUpperCase()}
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <p className="text-sm font-semibold text-gray-900 leading-none">{user?.full_name || user?.username}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{user?.role || 'User'}</p>
+                  </div>
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                    <div className="p-3 border-b border-gray-50">
+                      <p className="text-sm font-semibold text-gray-900">{user?.full_name || user?.username}</p>
+                      <p className="text-xs text-gray-400">{user?.email}</p>
+                    </div>
+                    <div className="p-1">
+                      {navLinks.map(link => (
+                        <Link key={link.href} href={link.href} onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
+                          <span>{link.icon}</span>{link.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="p-1 border-t border-gray-50">
+                      <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 transition">
+                        <span>🚪</span> Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link href="/login" className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-900 transition">Sign In</Link>
+                <Link href="/register" className="btn-primary text-sm px-5 py-2">Get Started</Link>
+              </div>
+            )}
+
+            {/* Mobile menu button */}
+            {isAuthenticated && (
+              <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden pb-4 border-t border-gray-200 space-y-2">
-            {isAuthenticated ? (
-              <>
-                <Link href="/dashboard" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition">
-                  Dashboard
-                </Link>
-                <Link href="/documents" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition">
-                  Documents
-                </Link>
-                <Link href="/team" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition">
-                  Team
-                </Link>
-                {user?.role === 'SUPER_ADMIN' && (
-                  <Link href="/admin" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition">
-                    Admin
-                  </Link>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition">
-                  Sign In
-                </Link>
-                <Link href="/register" className="block px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold transition">
-                  Get Started
-                </Link>
-              </>
-            )}
+        {/* Mobile nav */}
+        {mobileOpen && isAuthenticated && (
+          <div className="md:hidden pb-4 space-y-1">
+            {navLinks.map(link => (
+              <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition ${isActive(link.href) ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+                <span>{link.icon}</span>{link.label}
+              </Link>
+            ))}
+            <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition">
+              <span>🚪</span> Sign Out
+            </button>
           </div>
         )}
       </div>

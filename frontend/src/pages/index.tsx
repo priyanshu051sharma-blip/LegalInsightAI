@@ -1,130 +1,157 @@
-'use client';
+﻿import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useAuthStore } from "@/utils/store";
+import { useRouter } from "next/router";
 
-import Link from 'next/link';
-import { useAuthStore } from '@/utils/store';
+const features = [
+  { icon: "🔍", title: "AI Document Analysis", desc: "Extract obligations, parties, deadlines and clauses from any legal document instantly.", color: "from-blue-500 to-blue-600" },
+  { icon: "⚖️", title: "Case Research", desc: "Surface relevant case law, precedents and legal citations automatically.", color: "from-violet-500 to-violet-600" },
+  { icon: "🛡️", title: "Risk Detection", desc: "Get a 0-100 risk score with clause-level breakdown.", color: "from-red-500 to-red-600" },
+  { icon: "✅", title: "Compliance Check", desc: "Verify GDPR, HIPAA, CCPA, SOX compliance with remediation steps.", color: "from-emerald-500 to-emerald-600" },
+  { icon: "💬", title: "Legal Q&A", desc: "Ask any question about your document and get precise AI answers.", color: "from-amber-500 to-amber-600" },
+  { icon: "📊", title: "PDF Reports", desc: "Generate professional legal analysis reports for clients.", color: "from-cyan-500 to-cyan-600" },
+];
 
 export default function Home() {
   const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-legal">
-      {/* Navigation */}
-      <header className="bg-opacity-90 backdrop-blur-md bg-legal-blue text-white py-4 fixed w-full z-50">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <div className="text-2xl font-bold">⚖️ Legal Assistant</div>
-          <nav className="flex gap-6">
+    <div className="min-h-screen bg-white">
+      <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100" : "bg-transparent"}`}>
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center text-white text-sm">⚖️</div>
+            <span className={`font-bold text-lg ${scrolled ? "text-gray-900" : "text-white"}`}>LegalAI</span>
+          </div>
+          <div className="flex items-center gap-3">
             {isAuthenticated ? (
-              <>
-                <Link href="/dashboard" className="hover:text-legal-gold transition">Dashboard</Link>
-                <Link href="/documents" className="hover:text-legal-gold transition">Documents</Link>
-              </>
+              <button onClick={() => router.push("/dashboard")} className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition">Dashboard →</button>
             ) : (
               <>
-                <Link href="/login" className="hover:text-legal-gold transition">Login</Link>
-                <Link href="/register" className="bg-legal-gold text-legal-blue px-4 py-2 rounded hover:opacity-90">
-                  Register
-                </Link>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <div className="pt-32 pb-20 px-4">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Intelligent Legal Document Analysis
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90">
-            AI-powered platform for analyzing contracts, identifying risks, and ensuring compliance
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            {isAuthenticated ? (
-              <Link
-                href="/dashboard"
-                className="bg-legal-gold text-legal-blue px-8 py-3 rounded-lg font-bold text-lg hover:opacity-90 transition"
-              >
-                Go to Dashboard
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/register"
-                  className="bg-legal-gold text-legal-blue px-8 py-3 rounded-lg font-bold text-lg hover:opacity-90 transition"
-                >
-                  Get Started Free
-                </Link>
-                <Link
-                  href="/login"
-                  className="bg-white text-legal-blue px-8 py-3 rounded-lg font-bold text-lg hover:opacity-90 transition"
-                >
-                  Login
-                </Link>
+                <Link href="/login" className={`text-sm font-medium transition ${scrolled ? "text-gray-600 hover:text-gray-900" : "text-white/80 hover:text-white"}`}>Sign In</Link>
+                <Link href="/register" className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition">Get Started Free</Link>
               </>
             )}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 py-20">
-        <h2 className="text-4xl font-bold text-white text-center mb-16">
-          Powered by AI Agents
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {[
-            {
-              icon: '📄',
-              title: 'Document Analysis',
-              desc: 'Extract key terms, obligations, and deadlines automatically'
-            },
-            {
-              icon: '⚖️',
-              title: 'Case Research',
-              desc: 'Find relevant case laws and legal precedents instantly'
-            },
-            {
-              icon: '⚠️',
-              title: 'Risk Detection',
-              desc: 'Identify high-risk clauses and missing protections'
-            },
-            {
-              icon: '✅',
-              title: 'Compliance Check',
-              desc: 'Verify GDPR, HIPAA, CCPA and other regulations'
-            },
-          ].map((feature, idx) => (
-            <div key={idx} className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition">
-              <div className="text-5xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-bold text-legal-blue mb-3">{feature.title}</h3>
-              <p className="text-gray-600">{feature.desc}</p>
+      {/* Hero */}
+      <section className="relative min-h-screen flex items-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl"></div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-6 py-32 grid md:grid-cols-2 gap-16 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 border border-blue-500/30 rounded-full text-blue-300 text-xs font-semibold mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+              Powered by Gemini 2.0 AI
             </div>
+            <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
+              Analyze Legal Docs in{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Seconds</span>
+            </h1>
+            <p className="text-lg text-slate-300 mb-10 leading-relaxed">
+              AI-powered platform for law firms — analyze contracts, detect risks, verify compliance, and conduct legal research in one place.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link href="/register" className="px-8 py-3.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-500 transition shadow-lg">Start for Free →</Link>
+              <Link href="/login" className="px-8 py-3.5 bg-white/10 border border-white/20 text-white rounded-xl font-bold hover:bg-white/20 transition">Sign In</Link>
+            </div>
+            <div className="flex flex-wrap gap-5 mt-8">
+              {["No credit card required", "Free 14-day trial", "Cancel anytime"].map(item => (
+                <span key={item} className="flex items-center gap-1.5 text-slate-400 text-sm">
+                  <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="hidden md:block">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm shadow-2xl">
+              <div className="flex items-center gap-3 mb-5 pb-4 border-b border-white/10">
+                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-lg">📄</div>
+                <div>
+                  <p className="text-white font-semibold text-sm">Employment_Contract.pdf</p>
+                  <p className="text-slate-400 text-xs">Analysis complete · 2.4MB</p>
+                </div>
+                <span className="ml-auto text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-semibold">Analyzed</span>
+              </div>
+              <div className="space-y-3">
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                  <div className="flex justify-between mb-1"><span className="text-red-400 text-xs font-bold">⚠ HIGH RISK</span><span className="text-red-300 text-xs font-bold">78/100</span></div>
+                  <p className="text-slate-300 text-xs">Unlimited liability clause — no cap on damages</p>
+                </div>
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
+                  <div className="flex justify-between mb-1"><span className="text-amber-400 text-xs font-bold">⚡ COMPLIANCE</span><span className="text-amber-300 text-xs font-bold">GDPR: Partial</span></div>
+                  <p className="text-slate-300 text-xs">Data retention policy missing — Art. 5(1)(e)</p>
+                </div>
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+                  <span className="text-emerald-400 text-xs font-bold">✓ KEY TERMS EXTRACTED</span>
+                  <p className="text-slate-300 text-xs mt-1">Non-compete: 2yr · Severance: 3mo · IP: full transfer</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="bg-blue-600 py-12">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {[["10,000+","Documents Analyzed"],["98%","Accuracy Rate"],["60s","Avg Analysis Time"],["50+","Compliance Checks"]].map(([v,l],i) => (
+            <div key={i}><p className="text-4xl font-black text-white">{v}</p><p className="text-blue-100 text-sm mt-1">{l}</p></div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* CTA Section */}
-      <div className="bg-white py-20 px-4 mt-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-legal-blue mb-6">
-            Ready to Transform Your Legal Process?
-          </h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Join thousands of legal professionals using AI to work smarter
-          </p>
-          {!isAuthenticated && (
-            <Link
-              href="/register"
-              className="inline-block bg-legal-blue text-white px-8 py-3 rounded-lg font-bold text-lg hover:opacity-90 transition"
-            >
-              Start Free Trial
-            </Link>
-          )}
+      {/* Features */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black text-gray-900 mb-4">Everything you need</h2>
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">Six AI agents working together for complete legal document intelligence.</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((f, i) => (
+              <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition group">
+                <div className={`w-12 h-12 bg-gradient-to-br ${f.color} rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform`}>{f.icon}</div>
+                <h3 className="font-bold text-gray-900 text-lg mb-2">{f.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-24 bg-gradient-to-br from-blue-600 to-blue-800">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-4xl font-black text-white mb-5">Ready to transform your legal workflow?</h2>
+          <p className="text-blue-100 text-lg mb-10">Join legal professionals saving 10+ hours per week on document review.</p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link href="/register" className="px-10 py-4 bg-white text-blue-700 rounded-xl font-black text-lg hover:bg-blue-50 transition shadow-xl">Get Started Free →</Link>
+            <Link href="/login" className="px-10 py-4 border-2 border-white/40 text-white rounded-xl font-bold text-lg hover:bg-white/10 transition">Sign In</Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-slate-900 text-slate-400 py-10">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2"><div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">⚖️</div><span className="text-white font-bold">LegalAI</span></div>
+          <p className="text-sm">© 2025 LegalAI. AI-Powered Legal Document Analysis.</p>
+          <div className="flex gap-6 text-sm"><a href="#" className="hover:text-white">Privacy</a><a href="#" className="hover:text-white">Terms</a></div>
+        </div>
+      </footer>
     </div>
   );
 }
